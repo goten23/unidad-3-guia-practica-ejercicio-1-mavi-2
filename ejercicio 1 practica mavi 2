@@ -1,0 +1,38 @@
+#include <iostream>
+#include <Box2D/Box2D.h>
+
+const float32 WORLD_WIDTH = 100.0f;
+const float32 WORLD_HEIGHT = 100.0f;
+const float32 BALL_RADIUS = 5.0f;
+
+int main() {
+    b2Vec2 gravity(0.0f, -9.8f);
+    b2World world(gravity);
+
+    b2BodyDef groundBodyDef;
+    b2Body* groundBody = world.CreateBody(&groundBodyDef);
+    b2EdgeShape groundBox;
+    groundBox.Set(b2Vec2(0.0f, 0.0f), b2Vec2(WORLD_WIDTH, 0.0f));
+    groundBody->CreateFixture(&groundBox, 0.0f);
+
+    b2BodyDef ballBodyDef;
+    ballBodyDef.type = b2_dynamicBody;
+    ballBodyDef.position.Set(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f);
+    b2Body* ballBody = world.CreateBody(&ballBodyDef);
+    b2CircleShape ballShape;
+    ballShape.m_radius = BALL_RADIUS;
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &ballShape;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    fixtureDef.restitution = 1.0f;
+    ballBody->CreateFixture(&fixtureDef);
+
+    for (int32 i = 0; i < 60; ++i) {
+        world.Step(1.0f / 60.0f, 6, 2);
+        b2Vec2 position = ballBody->GetPosition();
+        std::cout << "Posición de la pelota en el paso " << i << ": x=" << position.x << ", y=" << position.y << std::endl;
+    }
+
+    return 0;
+}
